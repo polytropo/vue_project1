@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Vue Project</title>
+		<meta http-equiv='content-type' content='text/html;charset=utf-8'>
+		<meta name='viewport' content='width=device-width,initial-scale=1.0'>
+		<style>
+			*{padding:0;margin:0;list-style:none;font-size:24px;line-height:30px;font-family:helvetica;}
+			#list li{margin:5px;padding:5px;background:#CCFFFF;border-radius:5px;}
+			#list li b{color:#0000FF}
+			#err_msg{margin:5px;padding:5px;background:#FF0033;border-radius:5px;color:white}
+		</style>
+		<script type='text/javascript' src='vue.js'></script>
+	<body>
+	<div id="app">
+		<ul id='list' v-if='car_info_set.length'>
+			<li v-for='element in car_info_set'>
+				Brand is <b>{{element.brand}}</b>, model is <b>{{element.model}}</b>, 
+				engine is <b>{{element.engine}}</b> and gearbox is <b>{{element.gearbox}}</b>.
+			</li>
+		</ul>
+		<p id='err_msg' v-else>{{err_msg}}</p>
+	</div>
+	<script type='text/javascript'>	
+		var vm = new Vue({
+			el:'#app',
+			data:{
+				car_info_set:[],
+				err_msg:'Sorry, no car in record.',
+				ajax:null,
+				url: './interface.php'
+				
+			},
+			created:function(){
+				this.ajax = new XMLHttpRequest();
+				this.request();
+			},
+			methods: {
+				request:function() {
+					this.ajax.onreadystatechange = this.response;
+					this.ajax.open('POST', this.url, true);
+					this.ajax.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+					this.ajax.send('range=all');
+				},
+				response:function() {
+					if(this.ajax.readyState == 4) {
+						if(this.ajax.status == 200) {
+							this.car_info_set = '';
+							var result = JSON.parse(this.ajax.responseText);
+							if(result[0]) {
+								// Data retrieved from database, unpack result[1]
+								this.car_info_set = result[1];
+							} else {
+								this.err_msg = result[1];
+							}
+						}
+					}
+				},
+			}
+		})
+		setInterval(function(){
+			vm.request();
+		}, 1000);
+		
+	</script>	
+	</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
